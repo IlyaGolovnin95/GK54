@@ -237,26 +237,49 @@ let bookings = {};
 let selectedDay = null;
 let pendingDeleteId = null;
 
+// ---- TIMEZONE GMT+5 ----
+const TZ = 'Asia/Yekaterinburg';
+
+function nowInTZ() {
+  return new Date(new Date().toLocaleString('en-US', {timeZone: TZ}));
+}
+
+function dateKeyTZ(d) {
+  const local = new Date(d.toLocaleString('en-US', {timeZone: TZ}));
+  const y = local.getFullYear();
+  const m = String(local.getMonth()+1).padStart(2,'0');
+  const day = String(local.getDate()).padStart(2,'0');
+  return `${y}-${m}-${day}`;
+}
+
 // ---- UTILS ----
-function dateKey(d) { return d.toISOString().split('T')[0]; }
+function dateKey(d) { return dateKeyTZ(d); }
+
 function getDays() {
   const days = [];
-  const today = new Date(); today.setHours(0,0,0,0);
+  const todayTZ = nowInTZ();
+  todayTZ.setHours(0,0,0,0);
   for (let i = -3; i <= 14; i++) {
-    const d = new Date(today); d.setDate(today.getDate() + i); days.push(d);
+    const d = new Date(todayTZ);
+    d.setDate(todayTZ.getDate() + i);
+    days.push(d);
   }
   return days;
 }
+
 function isToday(d) {
-  const t = new Date(); t.setHours(0,0,0,0);
-  const dd = new Date(d); dd.setHours(0,0,0,0);
-  return dd.getTime() === t.getTime();
+  return dateKeyTZ(new Date()) === dateKeyTZ(d);
 }
+
 function isPast(dateStr, h) {
-  return new Date(dateStr + 'T' + String(h).padStart(2,'0') + ':59:00') < new Date();
+  const now = nowInTZ();
+  const [y, mo, day] = dateStr.split('-').map(Number);
+  const slotEnd = new Date(y, mo-1, day, h, 59, 59);
+  return slotEnd < now;
 }
+
 function fmtDay(d) {
-  return d.toLocaleDateString('ru-RU', {weekday:'short', day:'numeric', month:'short'});
+  return d.toLocaleDateString('ru-RU', {weekday:'short', day:'numeric', month:'short', timeZone: TZ});
 }
 function esc(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 
@@ -461,7 +484,7 @@ document.getElementById('sync-btn').onclick = () => {
 
 // ---- INIT ----
 document.getElementById('topbar-date').textContent =
-  new Date().toLocaleDateString('ru-RU', {weekday:'long', day:'numeric', month:'long'});
+  new Date().toLocaleDateString('ru-RU', {weekday:'long', day:'numeric', month:'long', timeZone: TZ});
 
 startListener();
 
