@@ -137,6 +137,22 @@
   .skeleton { background: linear-gradient(90deg, var(--card) 25%, var(--bg3) 50%, var(--card) 75%); background-size: 200% 100%; animation: shimmer 1.2s infinite; border-radius: 8px; height: 54px; }
   @keyframes shimmer { to { background-position: -200% 0; } }
 
+  /* PRICE TAB */
+  .price-section-title { font-family: 'Bebas Neue', sans-serif; font-size: 15px; letter-spacing: 1px; color: var(--accent2); margin: 14px 0 6px; }
+  .price-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+  .price-table th { background: var(--bg3); color: var(--text2); font-weight: 600; padding: 6px 8px; text-align: left; font-size: 11px; letter-spacing: 0.3px; }
+  .price-table td { padding: 7px 8px; border-bottom: 1px solid var(--border); color: var(--text); }
+  .price-table tr:last-child td { border-bottom: none; }
+  .price-table td:first-child { font-weight: 600; color: var(--accent); }
+  .price-table td:not(:first-child) { text-align: right; color: var(--text2); }
+  .svc-row { display: flex; align-items: center; justify-content: space-between; padding: 8px 10px; border-radius: 8px; border: 1px solid var(--border); background: var(--bg3); cursor: pointer; transition: all 0.15s; }
+  .svc-row.selected { border-color: rgba(232,160,32,0.5); background: rgba(232,160,32,0.08); }
+  .svc-row-left { display: flex; align-items: center; gap: 8px; }
+  .svc-check { width: 18px; height: 18px; border-radius: 4px; border: 1px solid var(--border2); display: flex; align-items: center; justify-content: center; font-size: 11px; flex-shrink: 0; }
+  .svc-row.selected .svc-check { background: var(--accent); border-color: var(--accent); color: #000; }
+  .svc-name { font-size: 13px; color: var(--text); }
+  .svc-price { font-size: 13px; font-weight: 600; color: var(--text2); }
+  .svc-row.selected .svc-price { color: var(--accent); }
   /* EMPTY */
   .empty { text-align: center; padding: 40px 20px; color: var(--text3); font-size: 13px; }
   .empty .big { font-size: 32px; margin-bottom: 8px; }
@@ -164,7 +180,8 @@
 
   <div class="tabs">
     <div class="tab active" onclick="switchTab('schedule')">📅 Расписание</div>
-    <div class="tab" onclick="switchTab('add')">➕ Новая запись</div>
+    <div class="tab" onclick="switchTab('add')">➕ Запись</div>
+    <div class="tab" onclick="switchTab('price')">💰 Прайс</div>
   </div>
 
   <div class="content" id="content">
@@ -204,6 +221,53 @@
           <textarea id="f-comment" placeholder="Замена 4 колёс, летняя резина..."></textarea>
         </div>
         <button class="btn-submit" id="btn-save" onclick="saveAppointment()">ЗАПИСАТЬ</button>
+      </div>
+    </div>
+
+    <!-- PRICE TAB -->
+    <div id="tab-price" style="display:none;">
+      <div class="form-section" style="margin-bottom:10px;">
+        <h2>Калькулятор стоимости</h2>
+
+        <div class="field">
+          <label>Тип автомобиля</label>
+          <select id="p-cartype" onchange="priceUpdate()">
+            <option value="leg">Легковые (Хэчбек, Седан, Универсал)</option>
+            <option value="cross">Кроссоверы и внедорожники</option>
+            <option value="uaz">УАЗ, Газель, коммерческий транспорт</option>
+          </select>
+        </div>
+
+        <div class="field" id="p-size-wrap">
+          <label>Размер диска</label>
+          <select id="p-size" onchange="priceUpdate()"></select>
+        </div>
+
+        <div class="field">
+          <label>Количество колёс</label>
+          <select id="p-qty" onchange="priceUpdate()">
+            <option value="1">1 колесо</option>
+            <option value="2">2 колеса</option>
+            <option value="4" selected>4 колеса</option>
+          </select>
+        </div>
+
+        <div style="margin-top:8px; margin-bottom:12px;">
+          <div style="font-size:11px; color:var(--text2); text-transform:uppercase; letter-spacing:0.5px; margin-bottom:8px;">Услуги</div>
+          <div style="display:flex; flex-direction:column; gap:6px;" id="p-services"></div>
+        </div>
+
+        <div id="p-total-block" style="display:none; background:rgba(232,160,32,0.08); border:1px solid rgba(232,160,32,0.3); border-radius:10px; padding:14px 16px; margin-top:4px;">
+          <div style="font-size:12px; color:var(--text2); margin-bottom:4px;">ИТОГО</div>
+          <div id="p-total" style="font-family:'Bebas Neue',sans-serif; font-size:36px; color:var(--accent); letter-spacing:2px; line-height:1;"></div>
+          <div id="p-breakdown" style="font-size:11px; color:var(--text2); margin-top:6px; line-height:1.7;"></div>
+        </div>
+      </div>
+
+      <!-- PRICE LIST -->
+      <div class="form-section">
+        <h2>Прайс-лист</h2>
+        <div id="price-table-wrap"></div>
       </div>
     </div>
   </div>
@@ -587,14 +651,176 @@ window.saveAppointment = async function() {
   btn.disabled = false; btn.textContent = 'ЗАПИСАТЬ';
 }
 
+// ---- PRICE DATA ----
+const PRICE = {
+  leg: {
+    sizes: ['R13-14','R15','R16','R17','R18','R19','R20','Run-Flat','Профиль 50>'],
+    data: {
+      'R13-14': {dem:100,mont:100,bal:180,snyem:150,kompleks1:530,kompleks4:700,kompleksBS:1300,sezon:2100,sezonMoika:2300},
+      'R15':    {dem:100,mont:100,bal:190,snyem:160,kompleks1:550,kompleks4:700,kompleksBS:1400,sezon:2200,sezonMoika:2400},
+      'R16':    {dem:110,mont:110,bal:210,snyem:170,kompleks1:600,kompleks4:700,kompleksBS:1500,sezon:2400,sezonMoika:2600},
+      'R17':    {dem:130,mont:130,bal:220,snyem:180,kompleks1:660,kompleks4:800,kompleksBS:1600,sezon:2600,sezonMoika:2800},
+      'R18':    {dem:140,mont:140,bal:230,snyem:190,kompleks1:700,kompleks4:800,kompleksBS:1600,sezon:2800,sezonMoika:3000},
+      'R19':    {dem:160,mont:160,bal:240,snyem:200,kompleks1:760,kompleks4:900,kompleksBS:1700,sezon:3000,sezonMoika:3200},
+      'R20':    {dem:170,mont:170,bal:250,snyem:210,kompleks1:800,kompleks4:900,kompleksBS:1800,sezon:3200,sezonMoika:3400},
+      'Run-Flat':{dem:180,mont:180,bal:260,snyem:230,kompleks1:850,kompleks4:1000,kompleksBS:1900,sezon:3400,sezonMoika:3600},
+      'Профиль 50>':{dem:180,mont:180,bal:260,snyem:230,kompleks1:850,kompleks4:1000,kompleksBS:1900,sezon:3400,sezonMoika:3600},
+    }
+  },
+  cross: {
+    sizes: ['R15-17','R18','R19','R20','R21-R22','Профиль 65<','Run-Flat'],
+    data: {
+      'R15-17':  {dem:160,mont:160,bal:230,snyem:200,kompleks1:750,kompleks4:900,kompleksBS:1700,sezon:3000,sezonMoika:3300},
+      'R18':     {dem:180,mont:180,bal:240,snyem:210,kompleks1:810,kompleks4:900,kompleksBS:1800,sezon:3200,sezonMoika:3500},
+      'R19':     {dem:190,mont:190,bal:250,snyem:220,kompleks1:850,kompleks4:900,kompleksBS:1800,sezon:3400,sezonMoika:3700},
+      'R20':     {dem:210,mont:210,bal:260,snyem:230,kompleks1:910,kompleks4:1000,kompleksBS:1900,sezon:3600,sezonMoika:3900},
+      'R21-R22': {dem:220,mont:220,bal:270,snyem:240,kompleks1:950,kompleks4:1000,kompleksBS:2000,sezon:3800,sezonMoika:4100},
+      'Профиль 65<':{dem:240,mont:240,bal:280,snyem:250,kompleks1:1010,kompleks4:1100,kompleksBS:2100,sezon:4000,sezonMoika:4300},
+      'Run-Flat':{dem:240,mont:240,bal:280,snyem:250,kompleks1:1010,kompleks4:1100,kompleksBS:2100,sezon:4000,sezonMoika:4300},
+    }
+  },
+  uaz: {
+    sizes: ['Все размеры'],
+    data: {
+      'Все размеры': {dem:250,mont:250,bal:250,snyem:null,kompleks1:null,kompleks4:null,kompleksBS:null,sezon:null,sezonMoika:null}
+    }
+  }
+};
+
+const SERVICES = [
+  {id:'dem',      name:'Демонтаж шины',          perWheel: true},
+  {id:'mont',     name:'Монтаж шины',             perWheel: true},
+  {id:'bal',      name:'Балансировка',            perWheel: true},
+  {id:'snyem',    name:'Снятие/установка колеса', perWheel: true},
+  {id:'kompleks1',name:'Комплекс 1 колесо (дем+монт+баланс)', perWheel: false, fixedQty: 1},
+  {id:'kompleks4',name:'Комплекс С/У × 4 (съём+уст+подкачка)', perWheel: false, fixedQty: 1},
+  {id:'kompleksBS',name:'Комплекс Б.С/У × 4 (баланс+с/у)',     perWheel: false, fixedQty: 1},
+  {id:'sezon',    name:'Сезонная замена шин × 4',               perWheel: false, fixedQty: 1},
+  {id:'sezonMoika',name:'Сезонная замена + Тех.Мойка × 4',     perWheel: false, fixedQty: 1},
+];
+
+let selectedServices = new Set();
+
+function getPriceData() {
+  const ct = document.getElementById('p-cartype').value;
+  const sz = document.getElementById('p-size').value;
+  return PRICE[ct].data[sz] || {};
+}
+
+function priceUpdateSizes() {
+  const ct = document.getElementById('p-cartype').value;
+  const sel = document.getElementById('p-size');
+  sel.innerHTML = PRICE[ct].sizes.map(s => `<option value="${s}">${s}</option>`).join('');
+  selectedServices.clear();
+  priceRenderServices();
+  priceCalc();
+}
+
+function priceRenderServices() {
+  const d = getPriceData();
+  const qty = parseInt(document.getElementById('p-qty').value);
+  const wrap = document.getElementById('p-services');
+  wrap.innerHTML = SERVICES.map(svc => {
+    const unitPrice = d[svc.id];
+    if (!unitPrice) return '';
+    const q = svc.fixedQty || qty;
+    const total = unitPrice * q;
+    const sel = selectedServices.has(svc.id);
+    return `<div class="svc-row ${sel?'selected':''}" onclick="toggleSvc('${svc.id}')">
+      <div class="svc-row-left">
+        <div class="svc-check">${sel?'✓':''}</div>
+        <div class="svc-name">${svc.name}</div>
+      </div>
+      <div class="svc-price">${total.toLocaleString('ru-RU')} ₽</div>
+    </div>`;
+  }).filter(Boolean).join('');
+}
+
+window.toggleSvc = function(id) {
+  if (selectedServices.has(id)) selectedServices.delete(id);
+  else selectedServices.add(id);
+  priceRenderServices();
+  priceCalc();
+}
+
+function priceCalc() {
+  const d = getPriceData();
+  const qty = parseInt(document.getElementById('p-qty').value);
+  const block = document.getElementById('p-total-block');
+  const totalEl = document.getElementById('p-total');
+  const breakEl = document.getElementById('p-breakdown');
+
+  if (selectedServices.size === 0) { block.style.display = 'none'; return; }
+
+  let total = 0;
+  let lines = [];
+  selectedServices.forEach(id => {
+    const svc = SERVICES.find(s => s.id === id);
+    const unitPrice = d[id];
+    if (!unitPrice || !svc) return;
+    const q = svc.fixedQty || qty;
+    const sum = unitPrice * q;
+    total += sum;
+    lines.push(`${svc.name}: ${sum.toLocaleString('ru-RU')} ₽`);
+  });
+
+  block.style.display = '';
+  totalEl.textContent = total.toLocaleString('ru-RU') + ' ₽';
+  breakEl.innerHTML = lines.join('<br>');
+}
+
+window.priceUpdate = function() {
+  priceRenderServices();
+  priceCalc();
+}
+
+function renderPriceTable() {
+  const wrap = document.getElementById('price-table-wrap');
+  let html = '';
+
+  const sections = [
+    {key:'leg',   title:'Легковые (Хэчбек, Седан, Универсал)'},
+    {key:'cross', title:'Кроссоверы и внедорожники'},
+    {key:'uaz',   title:'УАЗ, Газель, коммерческий транспорт'},
+  ];
+
+  sections.forEach(sec => {
+    const pd = PRICE[sec.key];
+    html += `<div class="price-section-title">${sec.title}</div>`;
+    html += `<table class="price-table">
+      <tr>
+        <th>Размер</th><th>Дем</th><th>Монт</th><th>Бал</th><th>Снятие</th><th>К-с 1кол</th><th>С/У×4</th><th>Б.С/У×4</th><th>Сезон×4</th>
+      </tr>`;
+    pd.sizes.forEach(sz => {
+      const r = pd.data[sz];
+      html += `<tr>
+        <td>${sz}</td>
+        <td>${r.dem}</td>
+        <td>${r.mont}</td>
+        <td>${r.bal}</td>
+        <td>${r.snyem||'—'}</td>
+        <td>${r.kompleks1||'—'}</td>
+        <td>${r.kompleks4||'—'}</td>
+        <td>${r.kompleksBS||'—'}</td>
+        <td>${r.sezon||'—'}</td>
+      </tr>`;
+    });
+    html += '</table>';
+  });
+
+  wrap.innerHTML = html;
+}
+
 // ---- TABS ----
 window.switchTab = function(tab) {
   document.querySelectorAll('.tab').forEach((t,i) => {
-    t.classList.toggle('active', (i===0&&tab==='schedule')||(i===1&&tab==='add'));
+    t.classList.toggle('active', (i===0&&tab==='schedule')||(i===1&&tab==='add')||(i===2&&tab==='price'));
   });
   document.getElementById('tab-schedule').style.display = tab==='schedule' ? '' : 'none';
   document.getElementById('tab-add').style.display = tab==='add' ? '' : 'none';
+  document.getElementById('tab-price').style.display = tab==='price' ? '' : 'none';
   if (tab === 'add') { populateFormDates(); }
+  if (tab === 'price') { priceUpdateSizes(); renderPriceTable(); }
 }
 
 // ---- SYNC BTN ----
