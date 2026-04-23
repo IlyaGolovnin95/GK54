@@ -122,6 +122,17 @@
   .btn-cancel { flex: 1; padding: 11px; border-radius: 10px; border: 1px solid var(--border2); background: transparent; color: var(--text2); font-family: 'Onest', sans-serif; font-size: 14px; cursor: pointer; }
   .btn-danger { flex: 1; padding: 11px; border-radius: 10px; border: none; background: var(--danger); color: #fff; font-family: 'Bebas Neue', sans-serif; font-size: 18px; letter-spacing: 1px; cursor: pointer; }
 
+  /* VIEW MODAL */
+  .modal-view h3 { font-family: 'Bebas Neue', sans-serif; font-size: 24px; letter-spacing: 2px; color: var(--accent); margin-bottom: 4px; }
+  .modal-view .view-time { font-size: 12px; color: var(--text2); margin-bottom: 16px; }
+  .view-row { display: flex; flex-direction: column; gap: 3px; padding: 10px 0; border-bottom: 1px solid var(--border); }
+  .view-row:last-of-type { border-bottom: none; }
+  .view-label { font-size: 10px; color: var(--text3); text-transform: uppercase; letter-spacing: 0.5px; }
+  .view-value { font-size: 14px; color: var(--text); font-weight: 500; }
+  .modal-view .modal-btns { display: flex; gap: 10px; margin-top: 18px; }
+  .btn-edit { flex: 1; padding: 11px; border-radius: 10px; border: 1px solid rgba(232,160,32,0.4); background: transparent; color: var(--accent); font-family: 'Bebas Neue', sans-serif; font-size: 18px; letter-spacing: 1px; cursor: pointer; }
+  /* EDIT MODAL */
+  .modal-edit h3 { font-family: 'Bebas Neue', sans-serif; font-size: 22px; letter-spacing: 1.5px; color: var(--accent); margin-bottom: 14px; }
   /* LOADING STATE */
   .skeleton { background: linear-gradient(90deg, var(--card) 25%, var(--bg3) 50%, var(--card) 75%); background-size: 200% 100%; animation: shimmer 1.2s infinite; border-radius: 8px; height: 54px; }
   @keyframes shimmer { to { background-position: -200% 0; } }
@@ -200,6 +211,55 @@
 
 <div id="toast"></div>
 
+<!-- VIEW MODAL -->
+<div class="modal-overlay" id="modal-view">
+  <div class="modal modal-view">
+    <h3 id="view-time-header"></h3>
+    <div class="view-time" id="view-date-sub"></div>
+    <div class="view-row">
+      <div class="view-label">Автомобиль</div>
+      <div class="view-value" id="view-car"></div>
+    </div>
+    <div class="view-row">
+      <div class="view-label">Телефон</div>
+      <div class="view-value" id="view-phone"></div>
+    </div>
+    <div class="view-row" id="view-comment-row">
+      <div class="view-label">Комментарий</div>
+      <div class="view-value" id="view-comment"></div>
+    </div>
+    <div class="modal-btns">
+      <button class="btn-cancel" onclick="closeViewModal()">Закрыть</button>
+      <button class="btn-edit" onclick="openEditFromView()">✏ ИЗМЕНИТЬ</button>
+      <button class="btn-danger" style="flex:1;" onclick="askDeleteFromView()">УДАЛИТЬ</button>
+    </div>
+  </div>
+</div>
+
+<!-- EDIT MODAL -->
+<div class="modal-overlay" id="modal-edit">
+  <div class="modal modal-edit">
+    <h3>Редактировать запись</h3>
+    <div class="field">
+      <label>Автомобиль (марка, номер)</label>
+      <input type="text" id="e-car" placeholder="Toyota Camry А123ВС54" />
+    </div>
+    <div class="field">
+      <label>Телефон клиента</label>
+      <input type="tel" id="e-phone" placeholder="+7 900 000 00 00" />
+    </div>
+    <div class="field">
+      <label>Комментарий (вид работ)</label>
+      <textarea id="e-comment" placeholder="Замена 4 колёс, летняя резина..."></textarea>
+    </div>
+    <div class="modal-btns">
+      <button class="btn-cancel" onclick="closeEditModal()">Отмена</button>
+      <button class="btn-submit" style="flex:1;padding:11px;font-size:18px;" onclick="saveEdit()">СОХРАНИТЬ</button>
+    </div>
+  </div>
+</div>
+
+<!-- DELETE MODAL -->
 <div class="modal-overlay" id="modal-del">
   <div class="modal">
     <h3>Удалить запись?</h3>
@@ -360,14 +420,14 @@ function renderSlots() {
     const b = bookings[id];
     const past = isPast(selectedDay, h);
     if (b) {
-      return `<div class="slot booked ${past?'past':''}">
+      return `<div class="slot booked ${past?'past':''}" onclick="openView('${id}')" style="cursor:pointer;">
         <div class="slot-time">${h}:00</div>
         <div class="slot-body">
           <div class="slot-car">${esc(b.car)}</div>
           <div class="slot-meta">${esc(b.phone)}${b.comment ? ' · ' + esc(b.comment) : ''}</div>
         </div>
         <div class="slot-actions">
-          ${!past ? `<button class="btn-icon del" onclick="askDelete('${id}')">✕</button>` : ''}
+          ${!past ? `<button class="btn-icon del" onclick="event.stopPropagation();askDelete('${id}')">✕</button>` : ''}
         </div>
       </div>`;
     } else {
@@ -428,6 +488,69 @@ window.quickBook = function(dateStr, h) {
   document.getElementById('f-time').value = String(h);
   checkSlotStatus();
   document.getElementById('f-car').focus();
+}
+
+// ---- VIEW MODAL ----
+let currentViewId = null;
+
+window.openView = function(id) {
+  const b = bookings[id];
+  if (!b) return;
+  currentViewId = id;
+  const [dateStr, h] = id.split('_');
+  const dateObj = new Date(dateStr + 'T12:00:00');
+  const dateLabel = dateObj.toLocaleDateString('ru-RU', {weekday:'long', day:'numeric', month:'long', timeZone: TZ});
+  document.getElementById('view-time-header').textContent = h + ':00';
+  document.getElementById('view-date-sub').textContent = dateLabel;
+  document.getElementById('view-car').textContent = b.car || '—';
+  document.getElementById('view-phone').textContent = b.phone || '—';
+  document.getElementById('view-comment').textContent = b.comment || '—';
+  document.getElementById('view-comment-row').style.display = b.comment ? '' : 'none';
+  document.getElementById('modal-view').classList.add('open');
+}
+
+window.closeViewModal = function() {
+  document.getElementById('modal-view').classList.remove('open');
+  currentViewId = null;
+}
+
+window.openEditFromView = function() {
+  if (!currentViewId) return;
+  const b = bookings[currentViewId];
+  if (!b) return;
+  document.getElementById('e-car').value = b.car || '';
+  document.getElementById('e-phone').value = b.phone || '';
+  document.getElementById('e-comment').value = b.comment || '';
+  document.getElementById('modal-view').classList.remove('open');
+  document.getElementById('modal-edit').classList.add('open');
+  setTimeout(() => document.getElementById('e-car').focus(), 300);
+}
+
+window.closeEditModal = function() {
+  document.getElementById('modal-edit').classList.remove('open');
+}
+
+window.saveEdit = async function() {
+  if (!currentViewId) return;
+  const car = document.getElementById('e-car').value.trim();
+  const phone = document.getElementById('e-phone').value.trim();
+  const comment = document.getElementById('e-comment').value.trim();
+  if (!car) { showToast('Укажите автомобиль', 'error'); return; }
+  if (!phone) { showToast('Укажите телефон', 'error'); return; }
+  try {
+    const existing = bookings[currentViewId];
+    await setDoc(doc(db, 'bookings', currentViewId), { car, phone, comment, created: existing?.created || Date.now() });
+    showToast('Запись обновлена ✓', 'success');
+    closeEditModal();
+  } catch(e) {
+    showToast('Ошибка сохранения', 'error');
+  }
+}
+
+window.askDeleteFromView = function() {
+  if (!currentViewId) return;
+  closeViewModal();
+  setTimeout(() => askDelete(currentViewId), 200);
 }
 
 window.askDelete = function(id) {
