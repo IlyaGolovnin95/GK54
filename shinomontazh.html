@@ -227,6 +227,11 @@
   @media(max-width:850px) {.schedule-layout {grid-template-columns:290px minmax(0,1fr);gap:16px;}.content {padding:16px;}#tab-price {grid-template-columns:1fr;}}
   @media(max-width:640px) {.schedule-layout {grid-template-columns:1fr;gap:18px;}.calendar-panel {padding:14px;}.calendar-panel details:not([open]) .calendar-note {display:none;}.topbar {padding:12px 14px;}.topbar-title {font-size:18px;}.content {padding:14px 12px 32px;}.form-section {padding:18px;}.slot {padding:12px;gap:8px;}.schedule-heading h2 {font-size:19px;}.modal {padding:20px 16px max(24px,env(safe-area-inset-bottom));}.modal-btns {flex-wrap:wrap;}.tabs {padding:4px 8px;}.calendar-panel summary {cursor:pointer;min-height:44px;display:flex;align-items:center;font-weight:600;}}
   @media(prefers-reduced-motion:reduce) {* {animation:none!important;transition:none!important;scroll-behavior:auto!important;}}
+  .calendar-day.full,.day-pill.full,.day-pill.today.full {color:var(--danger);background:rgba(245,54,92,.12);border-color:var(--danger);font-weight:600;}
+  .calendar-day.full.active,.day-pill.full.active {background:#b92442;color:#fff;border-color:#b92442;outline:2px solid var(--text);outline-offset:-4px;}
+  .calendar-legend {display:flex;gap:10px;flex-wrap:wrap;color:var(--text2);font-size:11px;line-height:1.5;margin-top:12px;}
+  .legend-full {color:var(--danger);font-weight:600;}
+  .legend-free {color:var(--text);}
   @media(max-width:640px) and (orientation:portrait) {
     .content.schedule-mode {display:flex;flex-direction:column;overflow:hidden;padding:10px 12px 0;}
     .content.schedule-mode .connection-status {flex-shrink:0;margin-bottom:8px;font-size:11px;}
@@ -282,7 +287,8 @@
             <summary>Календарь записи</summary>
             <div class="calendar-header"><button class="btn-icon" id="month-prev" onclick="changeMonth(-1)" aria-label="Предыдущий месяц">‹</button><strong id="calendar-month"></strong><button class="btn-icon" id="month-next" onclick="changeMonth(1)" aria-label="Следующий месяц">›</button></div>
             <div class="calendar-grid" id="calendar-grid"></div>
-            <p class="calendar-note">Запись на 45 дней вперёд. Точка под датой — есть записи. Время сервиса: Екатеринбург (UTC+5).</p>
+            <div class="calendar-legend"><span class="legend-free">Свободно</span><span>● Частично занято</span><span class="legend-full">Красный — мест нет</span></div>
+            <p class="calendar-note">Запись на 45 дней вперёд. Время сервиса: Екатеринбург (UTC+5).</p>
           </details>
         </aside>
         <section>
@@ -488,6 +494,10 @@ function isPast(dateStr,h) { return new Date(dateStr+'T'+String(h).padStart(2,'0
 function fmtDay(d) {return d.toLocaleDateString('ru-RU',{weekday:'short',day:'numeric',month:'short',timeZone:'UTC'});}
 function esc(s) {return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
 function validSlot(date,h) {const b=dateBounds();return date>=b.min&&date<=b.max&&HOURS.includes(h)&&!isPast(date,h);}
+function dayOccupancy(key) {
+  const count=HOURS.filter(h=>!!bookings[key+'_'+h]).length;
+  return {count,full:count===HOURS.length,label:count===HOURS.length?'мест нет':count?'частично занято, свободных окон: '+(HOURS.length-count):'полностью свободно'};
+}
 function renderCalendar() {
   if(!calendarMonth)calendarMonth=selectedDay.slice(0,7);
   const first=dateFromKey(calendarMonth+'-01');
@@ -500,9 +510,9 @@ function renderCalendar() {
   let html=['Пн','Вт','Ср','Чт','Пт','Сб','Вс'].map(x=>'<span class="calendar-weekday">'+x+'</span>').join('')+'<span></span>'.repeat(offset);
   for(let day=1;day<=total;day++) {
     const key=calendarMonth+'-'+String(day).padStart(2,'0');
-    const count=Object.keys(bookings).filter(id=>id.startsWith(key+'_')).length;
+    const {count,full,label}=dayOccupancy(key);
     const disabled=key<shiftDay(b.min,-3)||key>b.max;
-    html+= '<button class="calendar-day'+(key===selectedDay?' active':'')+(key===b.min?' today':'')+'" '+(disabled?'disabled':'')+' aria-pressed="'+(key===selectedDay)+'" aria-label="'+fmtDay(dateFromKey(key))+', записей: '+count+'" data-date="'+key+'" onclick="selectDay(this.dataset.date)">'+day+(count?'<span class="dot"></span>':'')+'</button>';
+    html+= '<button class="calendar-day'+(key===selectedDay?' active':'')+(key===b.min?' today':'')+(full?' full':'')+'" '+(disabled?'disabled':'')+' aria-pressed="'+(key===selectedDay)+'" aria-label="'+fmtDay(dateFromKey(key))+', '+label+'" title="'+label+'" data-date="'+key+'" onclick="selectDay(this.dataset.date)">'+day+(count&&!full?'<span class="dot"></span>':'')+'</button>';
   }
   document.getElementById('calendar-grid').innerHTML=html;
   document.getElementById('selected-date-title').textContent=dateFromKey(selectedDay).toLocaleDateString('ru-RU',{weekday:'long',day:'numeric',month:'long',timeZone:'UTC'});
@@ -576,11 +586,11 @@ function renderDayNav() {
   if (!selectedDay) selectedDay = todayKey();
   nav.innerHTML = days.map(d => {
     const key = dateKey(d);
-    const count = Object.keys(bookings).filter(id => id.startsWith(key + '_')).length;
+    const {count,full,label}=dayOccupancy(key);
     const todayCls = isToday(d) ? ' today' : '';
     const activeCls = key === selectedDay ? ' active' : '';
-    return `<button class="day-pill${activeCls}${todayCls}" aria-pressed="${key === selectedDay}" onclick="selectDay('${key}')">
-      ${fmtDay(d)}${count > 0 ? `<span class="dot"></span>` : ''}
+    return `<button class="day-pill${activeCls}${todayCls}${full?' full':''}" aria-pressed="${key === selectedDay}" aria-label="${fmtDay(d)}, ${label}" title="${label}" onclick="selectDay('${key}')">
+      ${fmtDay(d)}${count > 0 && !full ? `<span class="dot"></span>` : ''}
     </button>`;
   }).join('');
   setTimeout(() => {
