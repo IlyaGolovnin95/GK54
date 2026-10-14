@@ -156,6 +156,74 @@
   /* EMPTY */
   .empty { text-align: center; padding: 40px 20px; color: var(--text3); font-size: 13px; }
   .empty .big { font-size: 32px; margin-bottom: 8px; }
+
+  /* Responsive, accessible interface. Database format remains unchanged. */
+  :root { color-scheme:dark; --bg:#111820; --bg2:#18232e; --bg3:#202e3c; --card:#1b2733; --text:#f4f7fa; --text2:#b8c5d1; --text3:#a3b3c2; --accent:#ffc15a; --accent2:#ffb36b; --border:#344452; --border2:#4a5b6b; --success:#6ee7b0; --danger:#ff8799; }
+  :root[data-theme="light"] { color-scheme:light; --bg:#f1f5f8; --bg2:#fff; --bg3:#edf2f6; --card:#fff; --text:#172534; --text2:#465a6c; --text3:#536878; --accent:#815000; --accent2:#99501c; --border:#d5dfe7; --border2:#b4c3cf; --success:#15704b; --danger:#b92442; }
+  body {font-family:Onest,system-ui,sans-serif;}
+  button,input,select,textarea {font-family:inherit;}
+  button:focus-visible,[tabindex]:focus-visible {outline:3px solid var(--accent);outline-offset:3px;}
+  button {touch-action:manipulation;}
+  .app {max-width:1280px;height:100dvh;min-height:100vh;}
+  .topbar {padding:16px 22px;gap:12px;}
+  .topbar-title,.form-section h2,.modal h3,.modal-view h3,.modal-edit h3 {font-family:inherit;letter-spacing:0;font-weight:600;}
+  .topbar-date {font-size:12px;margin-top:5px;}
+  .topbar-sync,.theme-toggle {width:44px;height:44px;flex-shrink:0;border:1px solid var(--border);border-radius:12px;background:var(--card);color:var(--text);cursor:pointer;}
+  .theme-toggle {font-size:19px;}
+  .topbar-sync {margin-left:0;}
+  .theme-toggle {margin-left:auto;}
+  .tabs {gap:6px;padding:6px 16px;}
+  .tab {min-height:48px;display:flex;align-items:center;justify-content:center;border-radius:10px;font-size:14px;}
+  .tab.active {background:var(--bg3);}
+  .content {padding:24px;}
+  .schedule-layout {display:grid;grid-template-columns:340px minmax(0,1fr);gap:24px;align-items:start;}
+  .calendar-panel {background:var(--card);border:1px solid var(--border);border-radius:18px;padding:18px;}
+  .eyebrow {font-size:12px;color:var(--text2);margin-bottom:10px;}
+  .calendar-header {display:flex;align-items:center;justify-content:space-between;gap:8px;margin:16px 0;}
+  .calendar-header strong {font-size:16px;text-transform:capitalize;}
+  .calendar-grid {display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:4px;}
+  .calendar-weekday {text-align:center;color:var(--text2);font-size:12px;padding:8px 0;}
+  .calendar-day {min-height:44px;position:relative;border:1px solid transparent;border-radius:10px;background:transparent;color:var(--text);font-size:14px;cursor:pointer;}
+  .calendar-day.today {border-color:var(--accent);}
+  .calendar-day.active {background:var(--accent);color:var(--bg);font-weight:600;}
+  .calendar-day:disabled {opacity:.35;cursor:default;}
+  .calendar-day .dot {position:absolute;bottom:4px;left:calc(50% - 2px);width:4px;height:4px;background:currentColor;border-radius:50%;}
+  .calendar-note {font-size:12px;color:var(--text2);line-height:1.6;margin-top:14px;}
+  .calendar-panel input {width:100%;min-height:44px;background:var(--bg3);border:1px solid var(--border2);color:var(--text);border-radius:10px;padding:10px;font-size:16px;}
+  .calendar-panel label {display:block;font-size:13px;margin-bottom:7px;color:var(--text2);}
+  .schedule-heading {display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:18px;flex-wrap:wrap;}
+  .schedule-heading h2 {font-size:22px;font-weight:600;text-transform:capitalize;}
+  .schedule-heading p {font-size:13px;color:var(--text2);margin-top:5px;}
+  .small-button {min-height:44px;padding:8px 14px;background:var(--card);border:1px solid var(--border2);border-radius:10px;color:var(--text);cursor:pointer;font-size:14px;}
+  .day-pill {min-height:44px;border-radius:12px;font:inherit;font-size:13px;}
+  .day-pill.active,.day-pill.today.active,.btn-submit {background:var(--accent);color:var(--bg);}
+  .slots {gap:10px;}
+  .slot {padding:14px 16px;min-height:76px;}
+  .slot-time {font-family:inherit;font-size:20px;font-weight:600;letter-spacing:0;min-width:58px;}
+  .slot-car {font-size:15px;}
+  .slot-meta {font-size:13px;}
+  .slot-free {font-size:14px;}
+  .slot.past {opacity:.7;}
+  .btn-icon {width:44px;height:44px;font-size:20px;border-radius:12px;}
+  .field label,.view-label {font-size:12px;}
+  .field input,.field select,.field textarea {font-size:16px;min-height:48px;}
+  .btn-submit,.btn-edit,.btn-danger {font-family:inherit;font-size:16px;font-weight:600;letter-spacing:0;min-height:48px;}
+  .btn-cancel {min-height:48px;}
+  #tab-add {max-width:720px;margin:0 auto;}
+  .form-section {padding:24px;border-radius:18px;}
+  #tab-price {display:grid;grid-template-columns:minmax(280px,400px) minmax(0,1fr);gap:20px;align-items:start;}
+  #price-table-wrap {overflow-x:auto;}
+  .price-table {min-width:650px;font-size:13px;}
+  .price-table th {font-size:12px;}
+  .svc-row {min-height:48px;gap:12px;}
+  .svc-price {white-space:nowrap;}
+  .modal {max-height:90dvh;overflow-y:auto;}
+  #toast {max-width:calc(100vw - 32px);white-space:normal;text-align:center;}
+  .connection-status {font-size:12px;color:var(--text2);margin-bottom:16px;line-height:1.5;}
+  @media(min-width:700px) {.modal-overlay {align-items:center;}.modal {border-radius:20px;padding-bottom:24px;}}
+  @media(max-width:850px) {.schedule-layout {grid-template-columns:290px minmax(0,1fr);gap:16px;}.content {padding:16px;}#tab-price {grid-template-columns:1fr;}}
+  @media(max-width:640px) {.schedule-layout {grid-template-columns:1fr;gap:18px;}.calendar-panel {padding:14px;}.calendar-panel details:not([open]) .calendar-note {display:none;}.topbar {padding:12px 14px;}.topbar-title {font-size:18px;}.content {padding:14px 12px 32px;}.form-section {padding:18px;}.slot {padding:12px;gap:8px;}.schedule-heading h2 {font-size:19px;}.modal {padding:20px 16px max(24px,env(safe-area-inset-bottom));}.modal-btns {flex-wrap:wrap;}.tabs {padding:4px 8px;}.calendar-panel summary {cursor:pointer;min-height:44px;display:flex;align-items:center;font-weight:600;}}
+  @media(prefers-reduced-motion:reduce) {* {animation:none!important;transition:none!important;scroll-behavior:auto!important;}}
 </style>
 </head>
 <body>
@@ -173,24 +241,40 @@
       <div class="topbar-title">Шиномонтаж</div>
       <div class="topbar-date" id="topbar-date"></div>
     </div>
-    <div class="topbar-sync" id="sync-btn" title="Обновить">
+    <button class="theme-toggle" id="theme-btn" type="button" aria-label="Переключить тему" onclick="toggleTheme()">☀</button>
+    <button class="topbar-sync" id="sync-btn" type="button" aria-label="Проверить обновления" title="Обновить">
       <svg viewBox="0 0 24 24"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
-    </div>
+    </button>
   </div>
 
-  <div class="tabs">
-    <div class="tab active" onclick="switchTab('schedule')">📅 Расписание</div>
-    <div class="tab" onclick="switchTab('add')">➕ Запись</div>
-    <div class="tab" onclick="switchTab('price')">💰 Прайс</div>
+  <div role="button" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.click()}" class="tabs">
+    <div role="button" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.click()}" class="tab active" onclick="switchTab('schedule')">📅 Расписание</div>
+    <div role="button" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.click()}" class="tab" onclick="switchTab('add')">➕ Запись</div>
+    <div role="button" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.click()}" class="tab" onclick="switchTab('price')">💰 Прайс</div>
   </div>
 
   <div class="content" id="content">
+    <div class="connection-status" id="connection-status" role="status">Подключаемся к расписанию…</div>
     <div id="tab-schedule">
-      <div class="day-nav" id="day-nav"></div>
+      <div class="schedule-layout">
+        <aside class="calendar-panel">
+          <details id="calendar-details" open>
+            <summary>Календарь записи</summary>
+            <div class="calendar-header"><button class="btn-icon" id="month-prev" onclick="changeMonth(-1)" aria-label="Предыдущий месяц">‹</button><strong id="calendar-month"></strong><button class="btn-icon" id="month-next" onclick="changeMonth(1)" aria-label="Следующий месяц">›</button></div>
+            <div class="calendar-grid" id="calendar-grid"></div>
+            <p class="calendar-note">Запись на 45 дней вперёд. Точка под датой — есть записи. Время сервиса: Екатеринбург (UTC+5).</p>
+          </details>
+        </aside>
+        <section>
+          <div class="schedule-heading"><div><h2 id="selected-date-title"></h2><p id="day-summary"></p></div><button class="small-button" onclick="goToday()">Сегодня</button></div>
+          <div class="eyebrow">Ближайшие 14 дней</div>
+          <div class="day-nav" id="day-nav"></div>
       <div class="slots" id="slots-container">
         <div class="skeleton"></div>
         <div class="skeleton" style="opacity:0.7"></div>
         <div class="skeleton" style="opacity:0.4"></div>
+      </div>
+        </section>
       </div>
     </div>
 
@@ -199,25 +283,25 @@
         <h2>Записать клиента</h2>
         <div class="field-row">
           <div class="field">
-            <label>Дата</label>
-            <select id="f-date" onchange="updateTimeSelect()"></select>
+            <label for="f-date">Дата</label>
+            <input type="date" id="f-date" onchange="updateTimeSelect()" />
           </div>
           <div class="field">
-            <label>Время</label>
+            <label for="f-time">Время</label>
             <select id="f-time" onchange="checkSlotStatus()"></select>
           </div>
         </div>
         <div id="slot-badge-wrap"></div>
         <div class="field">
-          <label>Автомобиль (марка, номер)</label>
+          <label for="f-car">Автомобиль (марка, номер)</label>
           <input type="text" id="f-car" placeholder="Toyota Camry А123ВС54" />
         </div>
         <div class="field">
-          <label>Телефон клиента</label>
+          <label for="f-phone">Телефон клиента</label>
           <input type="tel" id="f-phone" placeholder="+7 900 000 00 00" />
         </div>
         <div class="field">
-          <label>Комментарий (вид работ)</label>
+          <label for="f-comment">Комментарий (вид работ)</label>
           <textarea id="f-comment" placeholder="Замена 4 колёс, летняя резина..."></textarea>
         </div>
         <button class="btn-submit" id="btn-save" onclick="saveAppointment()">ЗАПИСАТЬ</button>
@@ -230,7 +314,7 @@
         <h2>Калькулятор стоимости</h2>
 
         <div class="field">
-          <label>Тип автомобиля</label>
+          <label for="p-cartype">Тип автомобиля</label>
           <select id="p-cartype" onchange="priceUpdate()">
             <option value="leg">Легковые (Хэчбек, Седан, Универсал)</option>
             <option value="cross">Кроссоверы и внедорожники</option>
@@ -239,12 +323,12 @@
         </div>
 
         <div class="field" id="p-size-wrap">
-          <label>Размер диска</label>
+          <label for="p-size">Размер диска</label>
           <select id="p-size" onchange="priceUpdate()"></select>
         </div>
 
         <div class="field">
-          <label>Количество колёс</label>
+          <label for="p-qty">Количество колёс</label>
           <select id="p-qty" onchange="priceUpdate()">
             <option value="1">1 колесо</option>
             <option value="2">2 колеса</option>
@@ -273,7 +357,7 @@
   </div>
 </div>
 
-<div id="toast"></div>
+<div id="toast" role="status" aria-live="polite"></div>
 
 <!-- VIEW MODAL -->
 <div class="modal-overlay" id="modal-view">
@@ -305,15 +389,15 @@
   <div class="modal modal-edit">
     <h3>Редактировать запись</h3>
     <div class="field">
-      <label>Автомобиль (марка, номер)</label>
+      <label for="e-car">Автомобиль (марка, номер)</label>
       <input type="text" id="e-car" placeholder="Toyota Camry А123ВС54" />
     </div>
     <div class="field">
-      <label>Телефон клиента</label>
+      <label for="e-phone">Телефон клиента</label>
       <input type="tel" id="e-phone" placeholder="+7 900 000 00 00" />
     </div>
     <div class="field">
-      <label>Комментарий (вид работ)</label>
+      <label for="e-comment">Комментарий (вид работ)</label>
       <textarea id="e-comment" placeholder="Замена 4 колёс, летняя резина..."></textarea>
     </div>
     <div class="modal-btns">
@@ -340,7 +424,7 @@
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getFirestore, doc, setDoc, deleteDoc, onSnapshot, collection } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { getFirestore, doc, runTransaction, onSnapshot, collection, getDocsFromServer } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyBiicX61mOl6rHBAXJFdPr_1xTK-mjP3t8",
@@ -360,52 +444,58 @@ const db = getFirestore(firebaseApp);
 let bookings = {};
 let selectedDay = null;
 let pendingDeleteId = null;
+let dataReady = false;
+let saving = false;
+let calendarMonth = null;
+const BOOKING_DAYS = 45;
 
 // ---- TIMEZONE GMT+5 ----
 const TZ = 'Asia/Yekaterinburg';
 
-function nowInTZ() {
-  return new Date(new Date().toLocaleString('en-US', {timeZone: TZ}));
-}
-
 function dateKeyTZ(d) {
-  const local = new Date(d.toLocaleString('en-US', {timeZone: TZ}));
-  const y = local.getFullYear();
-  const m = String(local.getMonth()+1).padStart(2,'0');
-  const day = String(local.getDate()).padStart(2,'0');
-  return `${y}-${m}-${day}`;
+  const p = new Intl.DateTimeFormat('en-CA',{timeZone:TZ,year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(d);
+  const value = type => p.find(part=>part.type===type).value;
+  return value('year')+'-'+value('month')+'-'+value('day');
 }
-
-// ---- UTILS ----
-function dateKey(d) { return dateKeyTZ(d); }
-
-function getDays() {
-  const days = [];
-  const todayTZ = nowInTZ();
-  todayTZ.setHours(0,0,0,0);
-  for (let i = -3; i <= 14; i++) {
-    const d = new Date(todayTZ);
-    d.setDate(todayTZ.getDate() + i);
-    days.push(d);
+function dateKey(d) { return d.toISOString().slice(0,10); }
+function dateFromKey(key) { return new Date(key+'T00:00:00Z'); }
+function shiftDay(key,offset) { const d=dateFromKey(key);d.setUTCDate(d.getUTCDate()+offset);return dateKey(d); }
+function todayKey() { return dateKeyTZ(new Date()); }
+function dateBounds() {const today=todayKey();return {min:today,max:shiftDay(today,BOOKING_DAYS)};}
+function getDays() { return Array.from({length:14},(_,i)=>dateFromKey(shiftDay(todayKey(),i))); }
+function isToday(d) { return dateKey(d) === todayKey(); }
+function isPast(dateStr,h) { return new Date(dateStr+'T'+String(h).padStart(2,'0')+':59:59+05:00') < new Date(); }
+function fmtDay(d) {return d.toLocaleDateString('ru-RU',{weekday:'short',day:'numeric',month:'short',timeZone:'UTC'});}
+function esc(s) {return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function validSlot(date,h) {const b=dateBounds();return date>=b.min&&date<=b.max&&HOURS.includes(h)&&!isPast(date,h);}
+function renderCalendar() {
+  if(!calendarMonth)calendarMonth=selectedDay.slice(0,7);
+  const first=dateFromKey(calendarMonth+'-01');
+  const total=new Date(Date.UTC(first.getUTCFullYear(),first.getUTCMonth()+1,0)).getUTCDate();
+  const offset=(first.getUTCDay()+6)%7;
+  const b=dateBounds();
+  document.getElementById('calendar-month').textContent=first.toLocaleDateString('ru-RU',{month:'long',year:'numeric',timeZone:'UTC'});
+  document.getElementById('month-prev').disabled=calendarMonth<=shiftDay(b.min,-3).slice(0,7);
+  document.getElementById('month-next').disabled=calendarMonth>=b.max.slice(0,7);
+  let html=['Пн','Вт','Ср','Чт','Пт','Сб','Вс'].map(x=>'<span class="calendar-weekday">'+x+'</span>').join('')+'<span></span>'.repeat(offset);
+  for(let day=1;day<=total;day++) {
+    const key=calendarMonth+'-'+String(day).padStart(2,'0');
+    const count=Object.keys(bookings).filter(id=>id.startsWith(key+'_')).length;
+    const disabled=key<shiftDay(b.min,-3)||key>b.max;
+    html+= '<button class="calendar-day'+(key===selectedDay?' active':'')+(key===b.min?' today':'')+'" '+(disabled?'disabled':'')+' aria-pressed="'+(key===selectedDay)+'" aria-label="'+fmtDay(dateFromKey(key))+', записей: '+count+'" data-date="'+key+'" onclick="selectDay(this.dataset.date)">'+day+(count?'<span class="dot"></span>':'')+'</button>';
   }
-  return days;
+  document.getElementById('calendar-grid').innerHTML=html;
+  document.getElementById('selected-date-title').textContent=dateFromKey(selectedDay).toLocaleDateString('ru-RU',{weekday:'long',day:'numeric',month:'long',timeZone:'UTC'});
+  const count=HOURS.filter(h=>bookings[selectedDay+'_'+h]).length;
+  document.getElementById('day-summary').textContent=count+' записей · '+HOURS.filter(h=>!bookings[selectedDay+'_'+h]&&!isPast(selectedDay,h)).length+' свободных окон';
 }
+window.changeMonth=function(delta){const d=dateFromKey(calendarMonth+'-01');d.setUTCMonth(d.getUTCMonth()+delta);calendarMonth=dateKey(d).slice(0,7);renderCalendar();};
+window.goToday=function(){selectDay(todayKey());};
+function applyTheme(theme){document.documentElement.dataset.theme=theme;document.getElementById('theme-btn').textContent=theme==='dark'?'☀':'☾';document.getElementById('theme-btn').setAttribute('aria-label',theme==='dark'?'Включить светлую тему':'Включить тёмную тему');document.querySelector('meta[name="theme-color"]').content=theme==='dark'?'#18232e':'#ffffff';}
+window.toggleTheme=function(){const theme=document.documentElement.dataset.theme==='dark'?'light':'dark';applyTheme(theme);try{localStorage.setItem('gk54-theme',theme);}catch{}};
+try {applyTheme(localStorage.getItem('gk54-theme')|| (matchMedia('(prefers-color-scheme: light)').matches?'light':'dark'));}catch{applyTheme('dark');}
+if(matchMedia('(max-width:640px)').matches)document.getElementById('calendar-details').open=false;
 
-function isToday(d) {
-  return dateKeyTZ(new Date()) === dateKeyTZ(d);
-}
-
-function isPast(dateStr, h) {
-  const now = nowInTZ();
-  const [y, mo, day] = dateStr.split('-').map(Number);
-  const slotEnd = new Date(y, mo-1, day, h, 59, 59);
-  return slotEnd < now;
-}
-
-function fmtDay(d) {
-  return d.toLocaleDateString('ru-RU', {weekday:'short', day:'numeric', month:'short', timeZone: TZ});
-}
-function esc(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 
 // ---- TOAST ----
 let toastTimer;
@@ -430,7 +520,14 @@ window.confirmDelete = async function() {
   }
   if (pendingDeleteId) {
     try {
-      await deleteDoc(doc(db, 'bookings', pendingDeleteId));
+      const id = pendingDeleteId;
+      const expected = bookings[id];
+      await runTransaction(db, async tx => {
+        const ref=doc(db,'bookings',id);const snapshot=await tx.get(ref);
+        if(!snapshot.exists())return;
+        if(JSON.stringify(snapshot.data())!==JSON.stringify(expected))throw new Error('changed');
+        tx.delete(ref);
+      });
       showToast('Запись удалена', 'success');
     } catch(e) { showToast('Ошибка удаления', 'error'); }
   }
@@ -438,42 +535,46 @@ window.confirmDelete = async function() {
 }
 
 // ---- REALTIME LISTENER ----
+function connectionStatus(message) { document.getElementById('connection-status').textContent=message; }
+function acceptSnapshot(snapshot) {
+  bookings={};snapshot.forEach(d=>{bookings[d.id]=d.data();});
+  dataReady=!snapshot.metadata.fromCache;
+  connectionStatus(dataReady?'Расписание обновляется автоматически':'Нет подтверждения сервера. Запись временно недоступна.');
+  renderDayNav();renderSlots();renderCalendar();updateTimeSelect();
+}
 function startListener() {
-  onSnapshot(collection(db, 'bookings'), (snapshot) => {
-    bookings = {};
-    snapshot.forEach(d => { bookings[d.id] = d.data(); });
-    renderDayNav();
-    renderSlots();
-    updateTimeSelect();
-  }, (err) => {
-    showToast('Ошибка подключения', 'error');
+  onSnapshot(collection(db,'bookings'),{includeMetadataChanges:true},acceptSnapshot,()=>{
+    dataReady=false;connectionStatus('Не удалось загрузить записи. Проверьте подключение и нажмите обновление.');updateTimeSelect();
   });
 }
+
 
 // ---- DAY NAV ----
 function renderDayNav() {
   const nav = document.getElementById('day-nav');
   const days = getDays();
-  if (!selectedDay) selectedDay = dateKey(days[3]);
+  if (!selectedDay) selectedDay = todayKey();
   nav.innerHTML = days.map(d => {
     const key = dateKey(d);
     const count = Object.keys(bookings).filter(id => id.startsWith(key + '_')).length;
     const todayCls = isToday(d) ? ' today' : '';
     const activeCls = key === selectedDay ? ' active' : '';
-    return `<div class="day-pill${activeCls}${todayCls}" onclick="selectDay('${key}')">
+    return `<button class="day-pill${activeCls}${todayCls}" aria-pressed="${key === selectedDay}" onclick="selectDay('${key}')">
       ${fmtDay(d)}${count > 0 ? `<span class="dot"></span>` : ''}
-    </div>`;
+    </button>`;
   }).join('');
   setTimeout(() => {
     const active = nav.querySelector('.day-pill.active');
-    if (active) active.scrollIntoView({inline:'center', behavior:'smooth'});
+    if (active) active.scrollIntoView({inline:'center', block:'nearest', behavior:'smooth'});
   }, 50);
 }
 
 window.selectDay = function(key) {
   selectedDay = key;
+  calendarMonth=key.slice(0,7);
   renderDayNav();
   renderSlots();
+  renderCalendar();
 }
 
 // ---- SLOTS ----
@@ -484,14 +585,14 @@ function renderSlots() {
     const b = bookings[id];
     const past = isPast(selectedDay, h);
     if (b) {
-      return `<div class="slot booked ${past?'past':''}" onclick="openView('${id}')" style="cursor:pointer;">
+      return `<div role="button" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.click()}" class="slot booked ${past?'past':''}" onclick="openView('${id}')" style="cursor:pointer;">
         <div class="slot-time">${h}:00</div>
         <div class="slot-body">
           <div class="slot-car">${esc(b.car)}</div>
           <div class="slot-meta">${esc(b.phone)}${b.comment ? ' · ' + esc(b.comment) : ''}</div>
         </div>
         <div class="slot-actions">
-          ${!past ? `<button class="btn-icon del" onclick="event.stopPropagation();askDelete('${id}')">✕</button>` : ''}
+          ${!past ? `<button class="btn-icon del" aria-label="Удалить запись на ${h}:00" onclick="event.stopPropagation();askDelete('${id}')">✕</button>` : ''}
         </div>
       </div>`;
     } else {
@@ -499,7 +600,7 @@ function renderSlots() {
         <div class="slot-time">${h}:00</div>
         <div class="slot-body"><div class="slot-free">Свободно</div></div>
         <div class="slot-actions">
-          ${!past ? `<button class="btn-icon add" onclick="quickBook('${selectedDay}',${h})">+</button>` : ''}
+          ${!past ? `<button class="btn-icon add" aria-label="Записать на ${h}:00" onclick="quickBook('${selectedDay}',${h})">+</button>` : ''}
         </div>
       </div>`;
     }
@@ -508,42 +609,27 @@ function renderSlots() {
 
 // ---- FORM ----
 function populateFormDates() {
-  const sel = document.getElementById('f-date');
-  const days = getDays();
-  const today = new Date(); today.setHours(0,0,0,0);
-  const future = days.filter(d => d >= today);
-  sel.innerHTML = future.map(d => {
-    const key = dateKey(d);
-    return `<option value="${key}">${fmtDay(d)}${isToday(d)?' (сегодня)':''}</option>`;
-  }).join('');
+  const input=document.getElementById('f-date');const b=dateBounds();
+  input.min=b.min;input.max=b.max;
+  if(!input.value||input.value<b.min||input.value>b.max)input.value=selectedDay>=b.min&&selectedDay<=b.max?selectedDay:b.min;
   updateTimeSelect();
 }
+window.updateTimeSelect=function(){
+  const dateStr=document.getElementById('f-date').value;
+  const sel=document.getElementById('f-time');const previous=Number(sel.value);
+  sel.innerHTML=HOURS.map(h=>{const busy=!!bookings[dateStr+'_'+h];const disabled=busy||!validSlot(dateStr,h)||!dataReady;return '<option value="'+h+'" '+(disabled?'disabled':'')+'>'+h+':00'+(busy?' — занято':isPast(dateStr,h)?' — прошло':'')+'</option>';}).join('');
+  const available=HOURS.filter(h=>dataReady&&!bookings[dateStr+'_'+h]&&validSlot(dateStr,h));
+  sel.value=String(available.includes(previous)?previous:available[0]??'');checkSlotStatus();
+};
+window.checkSlotStatus=function(){
+  const date=document.getElementById('f-date').value;const h=Number(document.getElementById('f-time').value);
+  const busy=!!bookings[date+'_'+h];const valid=dataReady&&validSlot(date,h)&&!busy;
+  const message=!dataReady?'Ожидаем подключения к серверу':busy?'Время занято':!valid?'Выберите доступную дату и время':'Время свободно';
+  document.getElementById('slot-badge-wrap').innerHTML='<div class="slot-badge '+(valid?'free':'busy')+'">'+message+'</div>';
+  document.getElementById('btn-save').disabled=saving||!valid;
+};
 
-window.updateTimeSelect = function() {
-  const dateStr = document.getElementById('f-date').value;
-  const sel = document.getElementById('f-time');
-  sel.innerHTML = HOURS.map(h => {
-    const id = `${dateStr}_${h}`;
-    const busy = !!bookings[id];
-    const past = isPast(dateStr, h);
-    const disabled = busy || past;
-    return `<option value="${h}" ${disabled?'disabled':''}>
-      ${h}:00${busy?' — занято':past?' — прошло':''}
-    </option>`;
-  }).join('');
-  const first = HOURS.find(h => !bookings[`${dateStr}_${h}`] && !isPast(dateStr, h));
-  if (first) sel.value = String(first);
-  checkSlotStatus();
-}
 
-window.checkSlotStatus = function() {
-  const dateStr = document.getElementById('f-date').value;
-  const h = parseInt(document.getElementById('f-time').value);
-  const busy = !!bookings[`${dateStr}_${h}`];
-  const wrap = document.getElementById('slot-badge-wrap');
-  wrap.innerHTML = `<div class="slot-badge ${busy?'busy':'free'}">${busy?'⛔ Время занято':'✅ Время свободно'}</div>`;
-  document.getElementById('btn-save').disabled = busy;
-}
 
 window.quickBook = function(dateStr, h) {
   switchTab('add');
@@ -556,14 +642,16 @@ window.quickBook = function(dateStr, h) {
 
 // ---- VIEW MODAL ----
 let currentViewId = null;
+let editOriginal = null;
+let editSaving = false;
 
 window.openView = function(id) {
   const b = bookings[id];
   if (!b) return;
   currentViewId = id;
   const [dateStr, h] = id.split('_');
-  const dateObj = new Date(dateStr + 'T12:00:00');
-  const dateLabel = dateObj.toLocaleDateString('ru-RU', {weekday:'long', day:'numeric', month:'long', timeZone: TZ});
+  const dateObj = dateFromKey(dateStr);
+  const dateLabel = dateObj.toLocaleDateString('ru-RU', {weekday:'long', day:'numeric', month:'long', timeZone: 'UTC'});
   document.getElementById('view-time-header').textContent = h + ':00';
   document.getElementById('view-date-sub').textContent = dateLabel;
   document.getElementById('view-car').textContent = b.car || '—';
@@ -582,6 +670,7 @@ window.openEditFromView = function() {
   if (!currentViewId) return;
   const b = bookings[currentViewId];
   if (!b) return;
+  editOriginal = {...b};
   document.getElementById('e-car').value = b.car || '';
   document.getElementById('e-phone').value = b.phone || '';
   document.getElementById('e-comment').value = b.comment || '';
@@ -595,26 +684,33 @@ window.closeEditModal = function() {
 }
 
 window.saveEdit = async function() {
-  if (!currentViewId) return;
+  if (!currentViewId || editSaving) return;
   const car = document.getElementById('e-car').value.trim();
   const phone = document.getElementById('e-phone').value.trim();
   const comment = document.getElementById('e-comment').value.trim();
   if (!car) { showToast('Укажите автомобиль', 'error'); return; }
   if (!phone) { showToast('Укажите телефон', 'error'); return; }
+  editSaving=true;
   try {
-    const existing = bookings[currentViewId];
-    await setDoc(doc(db, 'bookings', currentViewId), { car, phone, comment, created: existing?.created || Date.now() });
+    const existing = editOriginal;
+    const ref=doc(db,'bookings',currentViewId);
+    await runTransaction(db,async tx=>{
+      const snapshot=await tx.get(ref);
+      if(!snapshot.exists()||JSON.stringify(snapshot.data())!==JSON.stringify(existing))throw new Error('changed');
+      tx.update(ref,{car,phone,comment});
+    });
     showToast('Запись обновлена ✓', 'success');
     closeEditModal();
   } catch(e) {
-    showToast('Ошибка сохранения', 'error');
-  }
+    showToast(e.message==='changed'?'Запись уже изменена. Откройте её заново.':'Ошибка сохранения', 'error');
+  } finally {editSaving=false;} 
 }
 
 window.askDeleteFromView = function() {
   if (!currentViewId) return;
+  const id=currentViewId;
   closeViewModal();
-  setTimeout(() => askDelete(currentViewId), 200);
+  askDelete(id);
 }
 
 window.askDelete = function(id) {
@@ -633,12 +729,20 @@ window.saveAppointment = async function() {
   const comment = document.getElementById('f-comment').value.trim();
   if (!car) { showToast('Укажите автомобиль', 'error'); return; }
   if (!phone) { showToast('Укажите телефон', 'error'); return; }
+  if(saving)return;
+  if(!dataReady||!validSlot(dateStr,h)){showToast('Выберите доступную дату и время','error');return;}
   const id = `${dateStr}_${h}`;
   if (bookings[id]) { showToast('Это время уже занято!', 'error'); return; }
   const btn = document.getElementById('btn-save');
+  saving=true;
   btn.disabled = true; btn.textContent = 'СОХРАНЕНИЕ...';
   try {
-    await setDoc(doc(db, 'bookings', id), { car, phone, comment, created: Date.now() });
+    await runTransaction(db,async tx=>{
+      const ref=doc(db,'bookings',id);const snapshot=await tx.get(ref);
+      if(snapshot.exists())throw new Error('occupied');
+      tx.set(ref,{car,phone,comment,created:Date.now()});
+    });
+    selectedDay=dateStr;calendarMonth=dateStr.slice(0,7);renderDayNav();renderSlots();renderCalendar();
     showToast('Клиент записан! ✓', 'success');
     document.getElementById('f-car').value = '';
     document.getElementById('f-phone').value = '';
@@ -646,9 +750,9 @@ window.saveAppointment = async function() {
     updateTimeSelect();
     switchTab('schedule');
   } catch(e) {
-    showToast('Ошибка сохранения', 'error');
+    showToast(e.message==='occupied'?'Это время уже занято. Выберите другое.':'Ошибка сохранения. Проверьте подключение.', 'error');
   }
-  btn.disabled = false; btn.textContent = 'ЗАПИСАТЬ';
+  saving=false;btn.textContent = 'ЗАПИСАТЬ';checkSlotStatus();
 }
 
 // ---- PRICE DATA ----
@@ -726,7 +830,7 @@ function priceRenderServices() {
     const q = svc.fixedQty || qty;
     const total = unitPrice * q;
     const sel = selectedServices.has(svc.id);
-    return `<div class="svc-row ${sel?'selected':''}" onclick="toggleSvc('${svc.id}')">
+    return `<div role="button" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.click()}" class="svc-row ${sel?'selected':''}" onclick="toggleSvc('${svc.id}')">
       <div class="svc-row-left">
         <div class="svc-check">${sel?'✓':''}</div>
         <div class="svc-name">${svc.name}</div>
@@ -818,23 +922,26 @@ window.switchTab = function(tab) {
   });
   document.getElementById('tab-schedule').style.display = tab==='schedule' ? '' : 'none';
   document.getElementById('tab-add').style.display = tab==='add' ? '' : 'none';
-  document.getElementById('tab-price').style.display = tab==='price' ? '' : 'none';
+  document.getElementById('tab-price').style.display = tab==='price' ? 'grid' : 'none';
   if (tab === 'add') { populateFormDates(); }
   if (tab === 'price') { priceUpdateSizes(); renderPriceTable(); }
 }
 
 // ---- SYNC BTN ----
-document.getElementById('sync-btn').onclick = () => {
-  const btn = document.getElementById('sync-btn');
-  btn.classList.add('syncing');
-  setTimeout(() => btn.classList.remove('syncing'), 1200);
-  showToast('Данные синхронизированы', 'success');
+document.getElementById('sync-btn').onclick=async()=>{
+  const btn=document.getElementById('sync-btn');btn.disabled=true;btn.classList.add('syncing');
+  try { const snapshot=await getDocsFromServer(collection(db,'bookings'));acceptSnapshot(snapshot);showToast('Расписание проверено на сервере','success'); }
+  catch {dataReady=false;connectionStatus('Сервер недоступен. Запись временно недоступна.');checkSlotStatus();showToast('Не удалось обновить расписание','error');}
+  finally {btn.disabled=false;btn.classList.remove('syncing');}
 };
+
 
 // ---- INIT ----
 document.getElementById('topbar-date').textContent =
   new Date().toLocaleDateString('ru-RU', {weekday:'long', day:'numeric', month:'long', timeZone: TZ});
 
+selectedDay=todayKey();
+renderDayNav();renderSlots();renderCalendar();populateFormDates();
 startListener();
 
 setTimeout(() => {
@@ -848,3 +955,4 @@ setTimeout(() => {
 </script>
 </body>
 </html>
+
