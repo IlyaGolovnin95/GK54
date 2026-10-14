@@ -164,7 +164,10 @@
   button,input,select,textarea {font-family:inherit;}
   button:focus-visible,[tabindex]:focus-visible {outline:3px solid var(--accent);outline-offset:3px;}
   button {touch-action:manipulation;}
-  .app {max-width:1280px;height:100dvh;min-height:100vh;}
+  html, body {width:100%;overflow:hidden;}
+  .app {max-width:1280px;height:100vh;height:100dvh;min-height:0;overflow:hidden;}
+  .content {min-width:0;min-height:0;overflow-x:hidden;}
+  .schedule-layout > section {min-width:0;}
   .topbar {padding:16px 22px;gap:12px;}
   .topbar-title,.form-section h2,.modal h3,.modal-view h3,.modal-edit h3 {font-family:inherit;letter-spacing:0;font-weight:600;}
   .topbar-date {font-size:12px;margin-top:5px;}
@@ -224,6 +227,23 @@
   @media(max-width:850px) {.schedule-layout {grid-template-columns:290px minmax(0,1fr);gap:16px;}.content {padding:16px;}#tab-price {grid-template-columns:1fr;}}
   @media(max-width:640px) {.schedule-layout {grid-template-columns:1fr;gap:18px;}.calendar-panel {padding:14px;}.calendar-panel details:not([open]) .calendar-note {display:none;}.topbar {padding:12px 14px;}.topbar-title {font-size:18px;}.content {padding:14px 12px 32px;}.form-section {padding:18px;}.slot {padding:12px;gap:8px;}.schedule-heading h2 {font-size:19px;}.modal {padding:20px 16px max(24px,env(safe-area-inset-bottom));}.modal-btns {flex-wrap:wrap;}.tabs {padding:4px 8px;}.calendar-panel summary {cursor:pointer;min-height:44px;display:flex;align-items:center;font-weight:600;}}
   @media(prefers-reduced-motion:reduce) {* {animation:none!important;transition:none!important;scroll-behavior:auto!important;}}
+  @media(max-width:640px) and (orientation:portrait) {
+    .content.schedule-mode {display:flex;flex-direction:column;overflow:hidden;padding:10px 12px 0;}
+    .content.schedule-mode .connection-status {flex-shrink:0;margin-bottom:8px;font-size:11px;}
+    .content.schedule-mode #tab-schedule {flex:1;min-height:0;min-width:0;}
+    .content.schedule-mode .schedule-layout {display:flex;flex-direction:column;height:100%;gap:10px;min-width:0;}
+    .content.schedule-mode .calendar-panel {flex-shrink:0;width:100%;padding:6px 12px;max-height:35dvh;overflow-y:auto;}
+    .content.schedule-mode .schedule-layout > section {display:flex;flex-direction:column;flex:1;min-height:0;width:100%;overflow:hidden;}
+    .content.schedule-mode .schedule-heading {flex-shrink:0;gap:8px;margin-bottom:8px;}
+    .content.schedule-mode .schedule-heading h2 {font-size:17px;}
+    .content.schedule-mode .schedule-heading p {font-size:12px;margin-top:3px;}
+    .content.schedule-mode .eyebrow {flex-shrink:0;margin-bottom:6px;}
+    .content.schedule-mode .day-nav {flex-shrink:0;width:100%;min-width:0;max-width:100%;margin-bottom:6px;padding-bottom:6px;overscroll-behavior-x:contain;}
+    .content.schedule-mode .slots {flex:1;min-height:0;overflow-y:auto;overflow-x:hidden;overscroll-behavior-y:contain;-webkit-overflow-scrolling:touch;padding-bottom:max(14px,env(safe-area-inset-bottom));}
+    .content.schedule-mode .slot {flex-shrink:0;min-height:72px;}
+    .tabs {flex-shrink:0;}
+    .topbar {padding-top:max(12px,env(safe-area-inset-top));}
+  }
 </style>
 </head>
 <body>
@@ -247,13 +267,13 @@
     </button>
   </div>
 
-  <div role="button" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.click()}" class="tabs">
+  <div class="tabs">
     <div role="button" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.click()}" class="tab active" onclick="switchTab('schedule')">📅 Расписание</div>
     <div role="button" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.click()}" class="tab" onclick="switchTab('add')">➕ Запись</div>
     <div role="button" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.click()}" class="tab" onclick="switchTab('price')">💰 Прайс</div>
   </div>
 
-  <div class="content" id="content">
+  <div class="content schedule-mode" id="content">
     <div class="connection-status" id="connection-status" role="status">Подключаемся к расписанию…</div>
     <div id="tab-schedule">
       <div class="schedule-layout">
@@ -565,7 +585,7 @@ function renderDayNav() {
   }).join('');
   setTimeout(() => {
     const active = nav.querySelector('.day-pill.active');
-    if (active) active.scrollIntoView({inline:'center', block:'nearest', behavior:'smooth'});
+    if (active) nav.scrollTo({left:active.offsetLeft - nav.offsetLeft - (nav.clientWidth - active.offsetWidth)/2, behavior:'smooth'});
   }, 50);
 }
 
@@ -917,6 +937,7 @@ function renderPriceTable() {
 
 // ---- TABS ----
 window.switchTab = function(tab) {
+  document.getElementById('content').classList.toggle('schedule-mode', tab === 'schedule');
   document.querySelectorAll('.tab').forEach((t,i) => {
     t.classList.toggle('active', (i===0&&tab==='schedule')||(i===1&&tab==='add')||(i===2&&tab==='price'));
   });
