@@ -493,7 +493,7 @@ const firebaseConfig = {
   appId: "1:403475199833:web:74378324971c93965e7e48"
 };
 
-const PIN = "1234";
+const PIN = "0000";
 const HOURS = [9,10,11,12,13,14,15,16,17,18,19];
 
 const firebaseApp = initializeApp(firebaseConfig);
@@ -502,6 +502,8 @@ const db = getFirestore(firebaseApp);
 let bookings = {};
 let selectedDay = null;
 let pendingDeleteId = null;
+let pendingDeleteFingerprint = null;
+let deleting = false;
 let dataReady = false;
 let saving = false;
 let calendarMonth = null;
@@ -570,10 +572,18 @@ window.showToast = function(msg, type='') {
 
 // ---- MODAL ----
 window.closeModal = function() {
+  if (deleting) return;
   document.getElementById('modal-del').classList.remove('open');
   pendingDeleteId = null;
+  pendingDeleteFingerprint = null;
+}
+// Firestore snapshots can return identical fields in different key orders.
+function bookingFingerprint(value) {
+  return JSON.stringify(value, (key,item) => item && typeof item === 'object' && !Array.isArray(item)
+    ? Object.fromEntries(Object.keys(item).sort().map(name => [name,item[name]])) : item);
 }
 window.confirmDelete = async function() {
+  if (deleting) return;
   const pin = document.getElementById('pin-input').value;
   if (pin !== PIN) {
     document.getElementById('pin-input').style.borderColor = 'var(--danger)';
@@ -583,15 +593,23 @@ window.confirmDelete = async function() {
   if (pendingDeleteId) {
     try {
       const id = pendingDeleteId;
-      const expected = bookings[id];
+      const expected = pendingDeleteFingerprint;
+      if (!expected) { showToast('Откройте запись заново', 'error'); return; }
+      deleting = true;
       await runTransaction(db, async tx => {
         const ref=doc(db,'bookings',id);const snapshot=await tx.get(ref);
         if(!snapshot.exists())return;
-        if(JSON.stringify(snapshot.data())!==JSON.stringify(expected))throw new Error('changed');
+        if(bookingFingerprint(snapshot.data())!==expected)throw new Error('changed');
         tx.delete(ref);
       });
       showToast('Запись удалена', 'success');
-    } catch(e) { showToast('Ошибка удаления', 'error'); }
+    } catch(e) {
+      const message=e.message==='changed'?'Запись изменена другим сотрудником. Откройте её заново.':
+        e.code==='permission-denied'?'База данных не разрешает удаление. Проверьте права Firebase.':
+        e.code==='unavailable'?'Нет связи с сервером. Повторите удаление позже.':'Не удалось удалить запись. Повторите попытку.';
+      showToast(message, 'error');
+      return;
+    } finally { deleting = false; }
   }
   closeModal();
 }
@@ -758,7 +776,7 @@ window.saveEdit = async function() {
     const ref=doc(db,'bookings',currentViewId);
     await runTransaction(db,async tx=>{
       const snapshot=await tx.get(ref);
-      if(!snapshot.exists()||JSON.stringify(snapshot.data())!==JSON.stringify(existing))throw new Error('changed');
+      if(!snapshot.exists()||bookingFingerprint(snapshot.data())!==bookingFingerprint(existing))throw new Error('changed');
       tx.update(ref,{car,phone,comment});
     });
     showToast('Запись обновлена ✓', 'success');
@@ -776,7 +794,9 @@ window.askDeleteFromView = function() {
 }
 
 window.askDelete = function(id) {
+  if (deleting) return;
   pendingDeleteId = id;
+  pendingDeleteFingerprint = bookingFingerprint(bookings[id]);
   document.getElementById('pin-input').value = '';
   document.getElementById('pin-input').style.borderColor = '';
   document.getElementById('modal-del').classList.add('open');
@@ -1002,7 +1022,7 @@ document.getElementById('sync-btn').onclick=async()=>{
 
 // ---- INIT ----
 document.getElementById('topbar-date').textContent =
-  new Date().toLocaleDateString('ru-RU', {weekday:'long', day:'numeric', month:'long', timeZone: TZ}) + ' · 1.4';
+  new Date().toLocaleDateString('ru-RU', {weekday:'long', day:'numeric', month:'long', timeZone: TZ}) + ' · 1.5';
 
 selectedDay=todayKey();
 renderDayNav();renderSlots();renderCalendar();populateFormDates();
